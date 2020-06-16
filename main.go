@@ -3,32 +3,32 @@ package main
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
-    "fmt"
-    "io/ioutil"
-
 
 	_ "github.com/go-sql-driver/mysql"
 )
 
-
 //Structure Employee
 type Employee struct {
 	ID        int
-	FirstName string   `json:"FirstName"`
-	LastName   string  `json:"LastName"`
-	City      string   `json:"City"`
-	Age       string   `json:"Age"`
+	FirstName string `json:"FirstName"`
+	LastName  string `json:"LastName"`
+	City      string `json:"City"`
+	Age       string `json:"Age"`
 }
 
 //Database connection
 func dbConn() (db *sql.DB) {
-	dbDriver := "mysql"
-	dbUser := "root"
-	dbPass := "tushar321"
-	dbName := "employee"
-	db, err := sql.Open(dbDriver, dbUser+":"+dbPass+"@/"+dbName)
+	//dbDriver := "mysql"
+	//dbUser := "root"
+	//dbPass := "tushar321"
+	//dbName := "employee"
+	//db, err := sql.Open(dbDriver, dbUser+":"+dbPass+"@/"+dbName)
+	connString := "root:tushar321@tcp(localhost:3306)/employee"
+	db, err := sql.Open("mysql", connString)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -133,16 +133,16 @@ func Insert(w http.ResponseWriter, r *http.Request) {
 			panic(err.Error())
 		}
 		keyVal := make(map[string]string)
-        json.Unmarshal(body, &keyVal)
+		json.Unmarshal(body, &keyVal)
 		FirstName := keyVal["FirstName"]
 		LastName := keyVal["LastName"]
 		City := keyVal["City"]
 		Age := keyVal["Age"]
 
 		_, err = stmt.Exec(FirstName, LastName, City, Age)
-         if err != nil{
+		if err != nil {
 			panic(err.Error())
-		 }
+		}
 	}
 	fmt.Fprintf(w, "New post was created")
 	defer db.Close()
@@ -162,7 +162,7 @@ func Update(w http.ResponseWriter, r *http.Request) {
 			panic(err.Error())
 		}
 		keyVal := make(map[string]string)
-        json.Unmarshal(body, &keyVal)
+		json.Unmarshal(body, &keyVal)
 		FirstName := keyVal["FirstName"]
 		LastName := keyVal["LastName"]
 		City := keyVal["City"]
@@ -170,7 +170,7 @@ func Update(w http.ResponseWriter, r *http.Request) {
 		Id := keyVal["ID"]
 
 		_, err = stmt.Exec(FirstName, LastName, City, Age, Id)
-         if err != nil{
+		if err != nil {
 			panic(err.Error())
 		}
 	}
